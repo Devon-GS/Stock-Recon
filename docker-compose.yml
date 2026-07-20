@@ -1,5 +1,7 @@
 services:
   inventory-usage:
+    container_name: inventory-recon-usage
+    image: inventory-recon-usage-image
     build: .
     ports:
       - "5003:5003"
