@@ -36,6 +36,14 @@ python app.py
 
 Then open the Flask server in your browser and upload the four CSV files.
 
+## Run with Docker
+
+```bash
+docker compose up --build
+```
+
+The SQLite database is stored in `/data/inventory.db` inside the container and backed by the named Docker volume `inventory_data`, so it stays persistent across restarts and rebuilds.
+
 ## Behavior
 
 - The app replaces the current dataset when a new set of CSV files is uploaded.

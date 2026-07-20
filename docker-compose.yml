@@ -1,0 +1,13 @@
+services:
+  inventory-usage:
+    build: .
+    ports:
+      - "5003:5003"
+    environment:
+      PORT: "5003"
+      INVENTORY_DB_PATH: /data/inventory.db
+    volumes:
+      - inventory_data:/data
+
+volumes:
+  inventory_data:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import io
+import os
 import sqlite3
 from collections import defaultdict
 from dataclasses import dataclass
@@ -14,7 +15,7 @@ from werkzeug.utils import secure_filename
 
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "inventory.db"
+DB_PATH = Path(os.environ.get("INVENTORY_DB_PATH", str(BASE_DIR / "inventory.db")))
 
 DATASET_DEFINITIONS = {
     "opening": {"label": "Opening Stock", "quantity_column": 7},
@@ -76,6 +77,7 @@ def create_app() -> Flask:
 
 
 def init_db() -> None:
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     with get_connection() as conn:
         conn.execute(
             """
@@ -343,4 +345,8 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(
+        host=os.environ.get("FLASK_RUN_HOST", "0.0.0.0"),
+        port=int(os.environ.get("PORT", "8000")),
+        debug=os.environ.get("FLASK_DEBUG", "0") == "1",
+    )
