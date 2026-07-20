@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">SQLite Flask App</p>
+    <h1>Inventory usage comparison</h1>
+    <p class="lede">
+      Upload the four CSV files, and the app will compare
+      <strong>opening stock + purchases - sales</strong>
+      against the closing stock per stock code.
+    </p>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Upload CSV files</h2>
+  <p class="section-copy">
+    Drop each file into its own panel, or click to browse. The app keeps the import set separate so it's harder to mix files up.
+  </p>
+
+  <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" class="upload-form" id="upload-form">
+    <div class="tabs" role="tablist" aria-label="Inventory file types">
+      <button type="button" class="tab is-active" role="tab" aria-selected="true" data-tab-target="opening-panel">Opening Stock</button>
+      <button type="button" class="tab" role="tab" aria-selected="false" data-tab-target="purchases-panel">Purchases</button>
+      <button type="button" class="tab" role="tab" aria-selected="false" data-tab-target="sales-panel">Sales</button>
+      <button type="button" class="tab" role="tab" aria-selected="false" data-tab-target="closing-panel">Closing Stock</button>
+    </div>
+
+    <div class="panels">
+      <section class="upload-panel is-active" id="opening-panel" role="tabpanel">
+        <div class="panel-copy">
+          <h3>Opening Stock</h3>
+          <p>Column 1: description, column 2: stock code, column 8: stock on hand amount.</p>
+        </div>
+        <label class="dropzone" data-dropzone>
+          <input type="file" name="opening" accept=".csv,text/csv" required>
+          <span class="dropzone-title">Drop opening stock CSV here</span>
+          <span class="dropzone-file" data-file-name>No file selected</span>
+          <span class="dropzone-action">Choose file</span>
+        </label>
+      </section>
+
+      <section class="upload-panel" id="purchases-panel" role="tabpanel" hidden>
+        <div class="panel-copy">
+          <h3>Purchases</h3>
+          <p>Column 1: description, column 2: stock code, column 7: quantity purchased.</p>
+        </div>
+        <label class="dropzone" data-dropzone>
+          <input type="file" name="purchases" accept=".csv,text/csv" required>
+          <span class="dropzone-title">Drop purchases CSV here</span>
+          <span class="dropzone-file" data-file-name>No file selected</span>
+          <span class="dropzone-action">Choose file</span>
+        </label>
+      </section>
+
+      <section class="upload-panel" id="sales-panel" role="tabpanel" hidden>
+        <div class="panel-copy">
+          <h3>Sales</h3>
+          <p>Column 1: description, column 2: stock code, column 6: quantity sold.</p>
+        </div>
+        <label class="dropzone" data-dropzone>
+          <input type="file" name="sales" accept=".csv,text/csv" required>
+          <span class="dropzone-title">Drop sales CSV here</span>
+          <span class="dropzone-file" data-file-name>No file selected</span>
+          <span class="dropzone-action">Choose file</span>
+        </label>
+      </section>
+
+      <section class="upload-panel" id="closing-panel" role="tabpanel" hidden>
+        <div class="panel-copy">
+          <h3>Closing Stock</h3>
+          <p>Column 1: description, column 2: stock code, column 8: stock on hand amount.</p>
+        </div>
+        <label class="dropzone" data-dropzone>
+          <input type="file" name="closing" accept=".csv,text/csv" required>
+          <span class="dropzone-title">Drop closing stock CSV here</span>
+          <span class="dropzone-file" data-file-name>No file selected</span>
+          <span class="dropzone-action">Choose file</span>
+        </label>
+      </section>
+    </div>
+
+    <div class="upload-actions">
+      <button type="submit">Import and compare</button>
+      <p class="upload-hint">Uploads replace the current comparison set after all four files validate successfully.</p>
+    </div>
+  </form>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="messages">
+        {% for category, message in messages %}
+          <div class="message {{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+</section>
+
+<section class="card">
+  <div class="summary">
+    <div>
+      <h2>Current comparison</h2>
+      <p>{{ summary.item_count }} item(s) loaded, {{ summary.discrepancy_count }} mismatch(es).</p>
+    </div>
+    <div class="export-actions">
+      <a class="export-button" href="{{ url_for('export_results') }}">Export CSV</a>
+      <a class="export-button export-button-secondary" href="{{ url_for('export_mismatches') }}">Export mismatches</a>
+    </div>
+  </div>
+
+  {% if items %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Stock Code</th>
+            <th>Opening</th>
+            <th>Purchases</th>
+            <th>Sales</th>
+            <th>Expected Closing</th>
+            <th>Actual Closing</th>
+            <th>Variance</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+            <tr class="{{ 'match' if item.match else 'mismatch' }}">
+              <td>{{ item.description }}</td>
+              <td>{{ item.stock_code }}</td>
+              <td>{{ item.opening }}</td>
+              <td>{{ item.purchases }}</td>
+              <td>{{ item.sales }}</td>
+              <td>{{ item.expected_closing }}</td>
+              <td>{{ item.closing }}</td>
+              <td>{{ item.variance }}</td>
+              <td>{{ 'Match' if item.match else 'Check' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="empty">No imported data yet. Upload the four CSV files to see the comparison.</p>
+  {% endif %}
+</section>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}
