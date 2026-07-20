@@ -7,8 +7,12 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   </head>
   <body>
+    <div class="page-bg"></div>
     <main class="shell">
       {% block content %}{% endblock %}
     </main>
+    <footer class="site-footer">
+      <p>Coded by Devon - Redfire IT Solutions © <span id="year"></span></p>
+    </footer>
   </body>
 </html>

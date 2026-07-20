@@ -1,4 +1,9 @@
 (() => {
+  const year = document.getElementById("year");
+  if (year) {
+    year.textContent = String(new Date().getFullYear());
+  }
+
   const tabs = Array.from(document.querySelectorAll("[data-tab-target]"));
   const panels = Array.from(document.querySelectorAll(".upload-panel"));
   const dropzones = Array.from(document.querySelectorAll("[data-dropzone]"));

@@ -1,23 +1,46 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="hero">
-  <div>
+<section class="hero hero-card">
+  <div class="hero-copy">
     <p class="eyebrow">SQLite Flask App</p>
     <h1>Inventory usage comparison</h1>
     <p class="lede">
-      Upload the four CSV files, and the app will compare
+      Upload the four CSV files and compare
       <strong>opening stock + purchases - sales</strong>
-      against the closing stock per stock code.
+      against the closing stock for each stock code.
     </p>
+    <div class="hero-tags">
+      <span class="tag">CSV import</span>
+      <span class="tag">SQLite storage</span>
+      <span class="tag">Mismatch export</span>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-card">
+      <span class="stat-label">Items loaded</span>
+      <strong>{{ summary.item_count }}</strong>
+    </div>
+    <div class="stat-card stat-card-warn">
+      <span class="stat-label">Mismatches</span>
+      <strong>{{ summary.discrepancy_count }}</strong>
+    </div>
+    <div class="stat-note">
+      Use the tabs to upload each file, then export either the full comparison or only the exceptions.
+    </div>
   </div>
 </section>
 
 <section class="card">
-  <h2>Upload CSV files</h2>
-  <p class="section-copy">
-    Drop each file into its own panel, or click to browse. The app keeps the import set separate so it's harder to mix files up.
-  </p>
+  <div class="section-head">
+    <div>
+      <h2>Upload CSV files</h2>
+      <p class="section-copy">
+        Drop each file into its own panel, or click to browse. The app keeps the import set separate so it's harder to mix files up.
+      </p>
+    </div>
+  </div>
 
   <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" class="upload-form" id="upload-form">
     <div class="tabs" role="tablist" aria-label="Inventory file types">
